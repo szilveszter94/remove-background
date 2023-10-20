@@ -65,7 +65,7 @@ def open_gif():
                 # Save each frame as a separate image (e.g., PNG)
                 output = remove(frame, session=session, post_process_mask=True)
                 frames.append(output)
-                open_label.config(text=f"Process: {frame_number * 100 / frame_count} %")
+                open_label.config(text=f"Process: {round(frame_number * 100 / frame_count, 2)} %")
             open_label.config(text="Select the path, where you want to save.")
             save_path = filedialog.asksaveasfilename(
                 defaultextension=".gif",
