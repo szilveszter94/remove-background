@@ -2,7 +2,7 @@ import math
 import tkinter as tk
 from tkinter import filedialog
 import threading
-from rembg import remove
+from rembg import remove, new_session
 from PIL import Image, ImageTk, ImageSequence
 
 WIDTH = 800
@@ -52,17 +52,18 @@ def open_gif():
     file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.gif")])
 
     def process_gif():
-        frames = []
         try:
             gif = Image.open(file_path)
             open_image_button.config(state="disabled")
             open_gif_button.config(state="disabled")
             frame_count = 0
+            frames = []
             for _ in ImageSequence.Iterator(gif):
                 frame_count += 1
+            session = new_session()
             for frame_number, frame in enumerate(ImageSequence.Iterator(gif), start=1):
                 # Save each frame as a separate image (e.g., PNG)
-                output = remove(frame)
+                output = remove(frame, session=session, post_process_mask=True)
                 frames.append(output)
                 open_label.config(text=f"Process: {frame_number * 100 / frame_count} %")
             open_label.config(text="Select the path, where you want to save.")
@@ -70,7 +71,7 @@ def open_gif():
                 defaultextension=".gif",
                 filetypes=[("GIF Files", "*.gif;"), ("All Files", "*.*")]
             )
-            frames[0].save(save_path, save_all=True, append_images=frames[1:], loop=0, duration=100, disposal=2)
+            frames[0].save(save_path, save_all=True, append_images=frames[1:], loop=0, duration=50, disposal=2)
             open_image_button.config(state="normal")
             open_gif_button.config(state="normal")
             open_label.config(text="Click to open an image, which you want to remove the background.")
